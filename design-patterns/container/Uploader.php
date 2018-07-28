@@ -98,7 +98,7 @@ $file = 'this is  a file';
 $upl = new Uploader_File();
 
 echo '<pre>';
-var_dump($upl);
+var_dump(get_class($upl));
 echo '</pre>';
 
 try{
