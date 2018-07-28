@@ -1,10 +1,12 @@
 <?php
 
+namespace Pra\Uploader;
+
 interface Uploader
 {
-    public function validate($data);
+    public function validate(Pra\Uploader\Data $data);
     
-    public function upload($data, $destination);
+    public function upload(Pra\Uploader\Data $data, $destination);
 }
 
 abstract class Uploader_Basic implements Uploader
@@ -12,15 +14,15 @@ abstract class Uploader_Basic implements Uploader
     protected $containData  = false;
     protected $dataValidity = false;
 
-    protected $data    = null;
-    protected $errors  = null;
+    protected $data   = null;
+    protected $errors = array();
 
-    protected $success = 0;
+    protected $success     = 0;
     protected $destination = '';
 
-    public function validate($data)
+    public function validate(Pra\Uploader\Data $data)
     {
-        if ($data !== null && empty($data)) {
+        if ($data !== null || empty($data) || $data !== '') {
             $this->data = $data;
 
             $this->containData = true;
@@ -33,7 +35,15 @@ abstract class Uploader_Basic implements Uploader
 
     public function getErrors()
     {
-        return $this->errors;
+        if ($this->errors) {
+            return $this->errors;
+        }
+
+        if ($this->data === null) {
+            return '[No Errors] No operations had been performed';
+        }
+
+        return '[No Errors] No Errors Found';
     }
 
     public function getSuccess()
@@ -61,7 +71,7 @@ class Uploader_File extends Uploader_Basic implements Uploader
 
     public function upload($data, $destination)
     {
-        if ($this->dataValidity) {
+        if (!$this->dataValidity) {
             $this->errors[] = '[Errors] Forbidden Upload: Trying to upload invalid data.';
 
             return $this;
@@ -76,8 +86,16 @@ class Uploader_File extends Uploader_Basic implements Uploader
     }
 }
 
-$file = '';
+$file = 'this is  a file';
 
 $upl = new Uploader_File();
 
-var_dump($upl->getSuccess());
+echo '<pre>';
+var_dump($upl);
+echo '</pre>';
+
+$upl->validate($file);
+
+echo '<pre>';
+var_dump($upl);
+echo '</pre>';
