@@ -2,6 +2,8 @@
 
 namespace Pra\Uploader;
 
+use Error as Error;
+
 interface Uploader
 {
     public function validate(Pra\Uploader\Data $data);
@@ -15,10 +17,15 @@ abstract class Uploader_Basic implements Uploader
     protected $dataValidity = false;
 
     protected $data   = null;
-    protected $errors = array();
+    protected $errors = null;
 
     protected $success     = 0;
     protected $destination = '';
+
+    public function __construct()
+    {
+        $this->errors = new Error();
+    }
 
     public function validate(Pra\Uploader\Data $data)
     {
@@ -51,12 +58,12 @@ abstract class Uploader_Basic implements Uploader
         return $this->success;
     }
 
-    public abstract function upload($data, $destination);
+    public abstract function upload(Pra\Uploader\Data $data, $destination);
 }
 
 class Uploader_File extends Uploader_Basic implements Uploader
 {
-    public function validate($data)
+    public function validate(Pra\Uploader\Data $data)
     {
         parent::validate($data);
 
@@ -69,7 +76,7 @@ class Uploader_File extends Uploader_Basic implements Uploader
         return $this;
     }
 
-    public function upload($data, $destination)
+    public function upload(Pra\Uploader\Data $data, $destination)
     {
         if (!$this->dataValidity) {
             $this->errors[] = '[Errors] Forbidden Upload: Trying to upload invalid data.';
@@ -94,7 +101,13 @@ echo '<pre>';
 var_dump($upl);
 echo '</pre>';
 
-$upl->validate($file);
+try{
+    $upl->validate($file);
+} catch (Exception $e) {
+    echo '<pre>';
+    var_dump($e->getMessage());
+    echo '</pre>';
+}
 
 echo '<pre>';
 var_dump($upl);
