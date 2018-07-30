@@ -55,7 +55,7 @@ class DataMutable extends Data_Basic implements Data
 
         if ($stricType === true) {
             if (gettype($data) !== gettype($this->data)) {
-                $this->errors[] = '[Type Error] Strict type turned on, modified data must be the same type. Rolling back data: No modification made';
+                $this->errors[] = '[Errors] Type Error: Strict type turned on, modified data must be the same type. Rolling back data: No modification made';
 
                 return $this;
             }
